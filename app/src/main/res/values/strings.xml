@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">Al-Halal Logistics</string>
+    <string name="company_legal_name">AL-HALAL LOGISTICS N TRANS</string>
+    <string name="company_address">281 Beverly Street, New State Areas, Springs, Gauteng, 1559, South Africa</string>
+    <string name="company_whatsapp_display">+27 74 076 7068</string>
+    <string name="company_whatsapp_e164">27740767068</string>
+    <string name="cta_request_quote">REQUEST A QUOTE</string>
+    <string name="cta_whatsapp_enquiry">WhatsApp Enquiry</string>
+    <string name="error_required_field">This field is required</string>
+    <string name="error_invalid_email">Please enter a valid email address.</string>
+    <string name="error_privacy_consent">Please accept the Privacy Policy before submitting.</string>
+</resources>

@@ -1,0 +1,6 @@
+{
+  "name": "Al-Halal Logistics",
+  "description": "AL-HALAL LOGISTICS N TRANS — International freight forwarding, South African customs clearance, SADC road freight, and Islamic supplies.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

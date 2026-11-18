@@ -1,0 +1,84 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Global fail-closed safety net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isAdmin() {
+      return isSignedIn() && exists(/databases/$(database)/documents/admins/$(request.auth.uid));
+    }
+
+    function isValidEnquiry(data) {
+      return data.userId is string &&
+             data.referenceNumber is string && data.referenceNumber.size() >= 6 && data.referenceNumber.size() <= 40 &&
+             data.fullName is string && data.fullName.size() >= 2 && data.fullName.size() <= 120 &&
+             data.whatsappNumber is string && data.whatsappNumber.size() >= 6 && data.whatsappNumber.size() <= 30 &&
+             data.email is string && data.email.size() >= 5 && data.email.size() <= 160 &&
+             data.serviceType is string && data.serviceType.size() <= 80 &&
+             data.status in ['Pending', 'In Progress', 'Quoted', 'Completed'] &&
+             data.createdAt is timestamp && data.createdAt <= request.time &&
+             data.updatedAt is timestamp && data.updatedAt <= request.time;
+    }
+
+    function isValidProduct(data) {
+      return data.name is string && data.name.size() >= 2 && data.name.size() <= 140 &&
+             data.categoryId is string && data.categoryId.size() <= 64 &&
+             data.description is string && data.description.size() <= 1000 &&
+             data.visible is bool;
+    }
+
+    // Customer enquiries: strict owner-only or admin access; zero public reads
+    match /enquiries/{enquiryId} {
+      allow get: if isSignedIn() && isValidId(enquiryId) &&
+                    (existing().userId == request.auth.uid || isAdmin());
+      allow list: if isSignedIn() &&
+                     (existing().userId == request.auth.uid || isAdmin());
+      allow create: if isSignedIn() && isValidId(enquiryId) &&
+                       incoming().userId == request.auth.uid &&
+                       incoming().status == 'Pending' &&
+                       isValidEnquiry(incoming());
+      allow update: if isSignedIn() && isValidId(enquiryId) && isAdmin() &&
+                       isValidEnquiry(incoming()) &&
+                       incoming().userId == existing().userId &&
+                       incoming().createdAt == existing().createdAt;
+      allow delete: if isAdmin();
+    }
+
+    // Public showcase products (admin writes only)
+    match /products/{productId} {
+      allow get, list: if existing().visible == true || isAdmin();
+      allow create, update: if isAdmin() && isValidId(productId) && isValidProduct(incoming());
+      allow delete: if isAdmin();
+    }
+
+    // Product categories (admin writes only)
+    match /categories/{categoryId} {
+      allow get, list: if true;
+      allow create, update, delete: if isAdmin() && isValidId(categoryId);
+    }
+
+    // Business settings & configurable website content (admin writes only)
+    match /business_settings/{docId} {
+      allow get: if true;
+      allow create, update, delete: if isAdmin();
+    }
+  }
+}

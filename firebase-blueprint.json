@@ -1,0 +1,82 @@
+{
+  "entities": {
+    "Enquiry": {
+      "title": "Customer Enquiry & Quotation Request",
+      "description": "Logistics quotation and customer enquiry record isolated per owner/admin",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "referenceNumber": { "type": "string" },
+        "fullName": { "type": "string" },
+        "companyName": { "type": "string" },
+        "whatsappNumber": { "type": "string" },
+        "email": { "type": "string" },
+        "country": { "type": "string" },
+        "originCountry": { "type": "string" },
+        "collectionCity": { "type": "string" },
+        "destinationCountry": { "type": "string" },
+        "deliveryCity": { "type": "string" },
+        "serviceType": { "type": "string" },
+        "status": { "type": "string", "enum": ["Pending", "In Progress", "Quoted", "Completed"] },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "referenceNumber", "fullName", "whatsappNumber", "email", "serviceType", "status", "createdAt", "updatedAt"]
+    },
+    "Product": {
+      "title": "Islamic Supply Product",
+      "description": "Showcase item in AL-HALAL ISLAMIC SUPPLIES",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "categoryId": { "type": "string" },
+        "description": { "type": "string" },
+        "variations": { "type": "string" },
+        "suppliedPriceText": { "type": "string" },
+        "imageUrl": { "type": "string" },
+        "visible": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["name", "categoryId", "description", "visible"]
+    },
+    "Category": {
+      "title": "Product Category",
+      "description": "Islamic supplies category metadata",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "description": { "type": "string" }
+      },
+      "required": ["name", "description"]
+    },
+    "BusinessSettings": {
+      "title": "Business Settings",
+      "description": "Editable company contact details and website content",
+      "type": "object",
+      "properties": {
+        "businessName": { "type": "string" },
+        "whatsappNumber": { "type": "string" },
+        "address": { "type": "string" }
+      },
+      "required": ["businessName", "whatsappNumber", "address"]
+    }
+  },
+  "firestore": {
+    "/enquiries/{enquiryId}": {
+      "schema": { "$ref": "#/entities/Enquiry" },
+      "description": "Customer logistics quotations and enquiries"
+    },
+    "/products/{productId}": {
+      "schema": { "$ref": "#/entities/Product" },
+      "description": "Islamic supplies catalogue items"
+    },
+    "/categories/{categoryId}": {
+      "schema": { "$ref": "#/entities/Category" },
+      "description": "Islamic supplies categories"
+    },
+    "/business_settings/{docId}": {
+      "schema": { "$ref": "#/entities/BusinessSettings" },
+      "description": "Editable corporate contact details and content"
+    }
+  }
+}
